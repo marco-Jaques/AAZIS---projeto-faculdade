@@ -140,7 +140,7 @@
     <!-- Tela 1: Cadastro do Cliente -->
     <div id="telaCadastro" class="tela active">
         <h1>Cadastro do Cliente</h1>
-        <form id="formCadastro" name="formCadastro" action="backend/inserir_cadastro.php" method="POST">
+        <form id="formCadastro" name="formCadastro">
             <label for="nome">Nome Completo:</label>
             <input type="text" id="nome" name="nome" required autocomplete="name">
 
@@ -160,7 +160,7 @@
     <!-- Tela 2: Serviços -->
     <div id="telaServico" class="tela">
         <h1>Seleção de Serviço</h1>
-        <form id="formServico" name="formServico" action="backend/inserir_servico.php" method="POST">
+        <form id="formServico" name="formServico">
         <input type="hidden" id="cliente_id" value="1">
             <!-- Imagem interativa do carro -->
             <div class="carro-container" style="position: relative; width: 100%; height: 300px; margin-top: 20px; border-radius: 8px; border: 1px solid #444; background: #1e1e1e; overflow: hidden;">
