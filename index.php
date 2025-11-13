@@ -221,194 +221,46 @@
 </div>
 
 <script>
-// --- Funções de validação ---
-function validarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, '');
-    if (cpf.length !== 11) return false;
-    if (/^(\d)\1+$/.test(cpf)) return false;
-    let soma = 0;
-    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
-    let resto = (soma * 10) % 11;
-    if (resto === 10) resto = 0;
-    if (resto !== parseInt(cpf.charAt(9))) return false;
-    soma = 0;
-    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
-    resto = (soma * 10) % 11;
-    if (resto === 10) resto = 0;
-    if (resto !== parseInt(cpf.charAt(10))) return false;
-    return true;
-}
-
-function validarEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// Máscara CPF
-const cpfInput = document.getElementById('cpf');
-cpfInput.addEventListener('input', function() {
-    let value = cpfInput.value.replace(/\D/g, '');
-    if (value.length > 11) value = value.slice(0, 11);
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    cpfInput.value = value;
-});
-
-let dadosCliente = {};
-
-   document.getElementById('formCadastro').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-
-    try {
-        const resposta = await fetch('backend/inserir_cadastro.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const texto = await resposta.text();
-        console.log("Resposta bruta do servidor:", texto);
-
-        const resultado = JSON.parse(texto);
-        console.log("Retorno do PHP:", resultado);
-
-        if (resultado.status === 'sucesso') {
-            localStorage.setItem('cliente_id', resultado.id);
-            console.log("Cliente cadastrado com ID:", resultado.id);
-
-            document.getElementById('telaCadastro').classList.remove('active');
-            document.getElementById('telaServico').classList.add('active');
-        } else {
-            alert('Erro ao cadastrar cliente: ' + resultado.mensagem);
-        }
-    } catch (erro) {
-        console.error("Erro ao processar:", erro);
-        alert("Erro inesperado ao cadastrar cliente.");
-    }
-});
-
-
-  const texto = await resposta.text(); // lê o texto cru
-  console.log("Resposta bruta do servidor:", texto);
-
-  const dados = JSON.parse(texto); // tenta converter em JSON
-  console.log("JSON convertido:", dados);
-
-  if (dados.status === 'sucesso') {
-    alert(dados.mensagem);
-  } else {
-    alert("Erro: " + dados.mensagem);
-  }
-} catch (erro) {
-  console.error("Erro ao processar:", erro);
-  alert("Erro inesperado ao processar resposta do servidor.");
-}
-
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const id = localStorage.getItem('cliente_id');
-    if (id) {
-        document.getElementById('cliente_id').value = id;
-        console.log("Cliente ID carregado:", id);
-    } else {
-        alert("Nenhum cliente encontrado. Volte ao cadastro.");
-    }
-});
-
-
-
-// --- Seleção interativa das partes ---
-document.querySelectorAll('.parte-carro').forEach(parte => {
-    parte.addEventListener('click', () => {
-        parte.classList.toggle('selecionada');
-        const selecionadas = Array.from(document.querySelectorAll('.parte-carro.selecionada'))
-            .map(p => p.dataset.parte);
-        document.getElementById('partesSelecionadas').value = selecionadas.join(', ');
-    });
-});
-
-document.getElementById('formServico').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const cliente_id = document.getElementById('cliente_id').value;
-    console.log("Cliente ID:", cliente_id); // 👈 veja se aparece no console
-
-    const modelo = document.getElementById('modelo').value.trim();
-    const servico = document.getElementById('servico').value.trim();
-    const funcionario = document.getElementById('funcionario').value;
-    const partes = document.getElementById('partesSelecionadas').value;
-
-    if (!modelo || !servico || !funcionario || !partes)
-        return alert('Por favor, preencha todos os campos.');
-
-    try {
-        const resposta = await fetch('backend/inserir_servico.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `cliente_id=${encodeURIComponent(cliente_id)}&modelo=${encodeURIComponent(modelo)}&servico=${encodeURIComponent(servico)}&funcionario=${encodeURIComponent(funcionario)}&partes=${encodeURIComponent(partes)}`
-        });
-
-        const resultado = await resposta.json();
-
-        if (resultado.status === 'sucesso') {
-            document.getElementById('telaServico').classList.remove('active');
-            document.getElementById('telaStatus').classList.add('active');
-
-            // --- Início da animação de progresso ---
-            let progresso = 0;
-            const barra = document.getElementById('barraProgresso');
-            const texto = document.getElementById('statusTexto');
-
-            const interval = setInterval(() => {
-                progresso += 10;
-                barra.style.width = progresso + '%';
-                barra.textContent = progresso + '%';
-
-                if (progresso < 40)
-                    texto.innerHTML = `Lavagem em andamento...<br><small>Partes: <b>${partes}</b></small>`;
-                else if (progresso < 80)
-                    texto.innerHTML = `Polimento e acabamento...<br><small>Partes: <b>${partes}</b></small>`;
-                else if (progresso < 100)
-                    texto.innerHTML = `Finalizando o serviço...<br><small>Partes: <b>${partes}</b></small>`;
-                else {
-                    texto.innerHTML = `Serviço concluído! Pronto para retirada.<br><small>Partes trabalhadas: <b>${partes}</b></small>`;
-                    clearInterval(interval);
-                }
-            }, 500);
-            // --- Fim da animação de progresso ---
-
-        } else {
-            alert('Erro ao salvar serviço: ' + resultado.mensagem);
-        }
-    } catch (erro) {
-        alert('Erro de conexão com o servidor.');
-        console.error(erro);
-    }
-});
-
-
-
-document.getElementById('btnVoltar').addEventListener('click', function() {
-    document.getElementById('telaStatus').classList.remove('active');
-    document.getElementById('telaCadastro').classList.add('active');
-});
-// Pega o ID do cliente passado via URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const cliente_id = urlParams.get('cliente_id');
-  if (cliente_id) {
-    document.getElementById('cliente_id').value = cliente_id;
-  };
-  
-
 document.addEventListener("DOMContentLoaded", () => {
-    const formCadastro = document.getElementById("formCadastro");
+
+    // ======== VALIDAÇÕES BÁSICAS ========
+    const cpfInput = document.getElementById('cpf');
+    cpfInput.addEventListener('input', function() {
+        let value = cpfInput.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        cpfInput.value = value;
+    });
+
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/\D/g, '');
+        if (cpf.length !== 11) return false;
+        if (/^(\d)\1+$/.test(cpf)) return false;
+        let soma = 0;
+        for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
+        let resto = (soma * 10) % 11;
+        if (resto === 10) resto = 0;
+        if (resto !== parseInt(cpf.charAt(9))) return false;
+        soma = 0;
+        for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10) resto = 0;
+        return resto === parseInt(cpf.charAt(10));
+    }
+
+    // ======== ELEMENTOS ========
     const telaCadastro = document.getElementById("telaCadastro");
     const telaServico = document.getElementById("telaServico");
+    const telaStatus = document.getElementById("telaStatus");
+    const formCadastro = document.getElementById("formCadastro");
+    const formServico = document.getElementById("formServico");
+    const btnVoltar = document.getElementById("btnVoltar");
 
+    // ======== ENVIO DO CADASTRO DO CLIENTE ========
     formCadastro.addEventListener("submit", async (e) => {
-        e.preventDefault(); // Impede o redirecionamento padrão
+        e.preventDefault();
 
         const formData = new FormData(formCadastro);
 
@@ -418,47 +270,120 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: formData
             });
 
-            // Verifica se o servidor retornou JSON
             const texto = await resposta.text();
+            console.log("Resposta bruta:", texto);
+
             let data;
             try {
                 data = JSON.parse(texto);
             } catch {
-                console.error("Resposta não é JSON:", texto);
-                alert("Erro inesperado no servidor. Veja o console.");
+                alert("Erro inesperado: resposta não é JSON.");
+                console.error("Conteúdo recebido:", texto);
                 return;
             }
 
-            // Se deu tudo certo no cadastro
             if (data.status === "sucesso") {
                 console.log("✅ Cliente cadastrado:", data);
 
-                // Guarda o ID do cliente no form de serviço
+                // Armazena o ID
+                localStorage.setItem('cliente_id', data.id);
                 document.getElementById("cliente_id").value = data.id;
 
                 // Troca as telas
                 telaCadastro.classList.remove("active");
-                telaCadastro.style.display = "none";
                 telaServico.classList.add("active");
-                telaServico.style.display = "block";
             } else {
-                alert(data.mensagem || "Erro ao cadastrar cliente.");
+                alert("Erro ao cadastrar cliente: " + data.mensagem);
             }
+
         } catch (erro) {
-            console.error("❌ Erro na requisição:", erro);
+            console.error("❌ Erro ao enviar cadastro:", erro);
             alert("Falha na comunicação com o servidor.");
         }
     });
 
+    // ======== CARREGA ID DO CLIENTE (se já salvo) ========
+    const clienteSalvo = localStorage.getItem('cliente_id');
+    if (clienteSalvo) document.getElementById('cliente_id').value = clienteSalvo;
 
-    // Botão "Nova Reserva"
-    document.getElementById('btnVoltar').addEventListener('click', () => {
+    // ======== SELEÇÃO DAS PARTES DO CARRO ========
+    document.querySelectorAll('.parte-carro').forEach(parte => {
+        parte.addEventListener('click', () => {
+            parte.classList.toggle('selecionada');
+            const selecionadas = Array.from(document.querySelectorAll('.parte-carro.selecionada'))
+                .map(p => p.dataset.parte);
+            document.getElementById('partesSelecionadas').value = selecionadas.join(', ');
+        });
+    });
+
+    // ======== ENVIO DO SERVIÇO ========
+    formServico.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const cliente_id = document.getElementById('cliente_id').value;
+        const modelo = document.getElementById('modelo').value.trim();
+        const servico = document.getElementById('servico').value.trim();
+        const funcionario = document.getElementById('funcionario').value;
+        const partes = document.getElementById('partesSelecionadas').value;
+
+        if (!modelo || !servico || !funcionario || !partes)
+            return alert('Por favor, preencha todos os campos.');
+
+        try {
+            const resposta = await fetch('backend/inserir_servico.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `cliente_id=${encodeURIComponent(cliente_id)}&modelo=${encodeURIComponent(modelo)}&servico=${encodeURIComponent(servico)}&funcionario=${encodeURIComponent(funcionario)}&partes=${encodeURIComponent(partes)}`
+            });
+
+            const resultado = await resposta.json();
+
+            if (resultado.status === 'sucesso') {
+                telaServico.classList.remove('active');
+                telaStatus.classList.add('active');
+
+                // --- Animação de progresso ---
+                let progresso = 0;
+                const barra = document.getElementById('barraProgresso');
+                const textoStatus = document.getElementById('statusTexto');
+
+                const interval = setInterval(() => {
+                    progresso += 10;
+                    barra.style.width = progresso + '%';
+                    barra.textContent = progresso + '%';
+
+                    if (progresso < 40)
+                        textoStatus.innerHTML = `Lavagem em andamento...<br><small>Partes: <b>${partes}</b></small>`;
+                    else if (progresso < 80)
+                        textoStatus.innerHTML = `Polimento e acabamento...<br><small>Partes: <b>${partes}</b></small>`;
+                    else if (progresso < 100)
+                        textoStatus.innerHTML = `Finalizando o serviço...<br><small>Partes: <b>${partes}</b></small>`;
+                    else {
+                        textoStatus.innerHTML = `Serviço concluído! Pronto para retirada.<br><small>Partes trabalhadas: <b>${partes}</b></small>`;
+                        clearInterval(interval);
+                    }
+                }, 500);
+
+            } else {
+                alert('Erro ao salvar serviço: ' + resultado.mensagem);
+            }
+
+        } catch (erro) {
+            alert('Erro de conexão com o servidor.');
+            console.error(erro);
+        }
+    });
+
+    // ======== BOTÃO "NOVA RESERVA" ========
+    btnVoltar.addEventListener('click', () => {
         telaStatus.classList.remove('active');
         telaCadastro.classList.add('active');
+        formCadastro.reset();
+        formServico.reset();
     });
 });
-
 </script>
+
 
 </body>
 </html>
