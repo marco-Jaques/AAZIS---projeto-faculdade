@@ -273,6 +273,16 @@ document.getElementById('formCadastro').addEventListener('submit', async functio
     }
 });
 
+// --- Seleção interativa das partes ---
+document.querySelectorAll('.parte-carro').forEach(parte => {
+    parte.addEventListener('click', () => {
+        parte.classList.toggle('selecionada');
+        const selecionadas = Array.from(document.querySelectorAll('.parte-carro.selecionada'))
+            .map(p => p.dataset.parte);
+        document.getElementById('partesSelecionadas').value = selecionadas.join(', ');
+    });
+});
+
 document.getElementById('formServico').addEventListener('submit', async function(e) {
     e.preventDefault();
 
