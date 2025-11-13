@@ -1,10 +1,9 @@
-
 <?php
-$host = 'mysql.railway.internal'; // coloque o host exato do seu Railway MySQL
+$host = 'ballast.proxy.rlwy.net'; // host público do Railway
 $dbname = 'railway'; // nome do banco
-$user = 'root'; // ou outro user mostrado no painel
-$pass = 'wMFrZaPRzpVwAaNDppPLwOKhtudXNtPy'; // substitua pela senha do Railway
-$port = '3306'; // a porta que aparece no painel
+$user = 'root'; // usuário do banco
+$pass = 'wMFrZaPRzpVwAaNDppPLwOKhtudXNtPy'; // senha
+$port = '50225'; // porta pública
 
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass);
@@ -14,5 +13,3 @@ try {
     die("Falha ao conectar ao banco de dados: " . $e->getMessage());
 }
 ?>
-
-
