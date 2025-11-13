@@ -256,35 +256,38 @@ cpfInput.addEventListener('input', function() {
 
 let dadosCliente = {};
 
-    document.getElementById('formCadastro').addEventListener('submit', async function(e) {
+   document.getElementById('formCadastro').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
 
-    const resposta = await fetch('backend/inserir_cadastro.php', {
-        method: 'POST',
-        body: formData
-    });
-
-    const resultado = await resposta.json();
-
-    console.log("Retorno do PHP:", resultado); // 👈 Adicione esta linha
-
-    if (resultado.status === 'sucesso') {
-        localStorage.setItem('cliente_id', resultado.id);
-        console.log("Cliente cadastrado com ID:", resultado.id);
-
-        document.getElementById('telaCadastro').classList.remove('active');
-        document.getElementById('telaServico').classList.add('active');
-    } else {
-        alert('Erro ao cadastrar cliente: ' + resultado.mensagem);
-    }
-
     try {
-  const resposta = await fetch('backend/inserir_cadastro.php', {
-    method: 'POST',
-    body: formData
-  });
+        const resposta = await fetch('backend/inserir_cadastro.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const texto = await resposta.text();
+        console.log("Resposta bruta do servidor:", texto);
+
+        const resultado = JSON.parse(texto);
+        console.log("Retorno do PHP:", resultado);
+
+        if (resultado.status === 'sucesso') {
+            localStorage.setItem('cliente_id', resultado.id);
+            console.log("Cliente cadastrado com ID:", resultado.id);
+
+            document.getElementById('telaCadastro').classList.remove('active');
+            document.getElementById('telaServico').classList.add('active');
+        } else {
+            alert('Erro ao cadastrar cliente: ' + resultado.mensagem);
+        }
+    } catch (erro) {
+        console.error("Erro ao processar:", erro);
+        alert("Erro inesperado ao cadastrar cliente.");
+    }
+});
+
 
   const texto = await resposta.text(); // lê o texto cru
   console.log("Resposta bruta do servidor:", texto);
