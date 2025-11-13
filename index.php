@@ -399,78 +399,57 @@ document.getElementById('btnVoltar').addEventListener('click', function() {
   const cliente_id = urlParams.get('cliente_id');
   if (cliente_id) {
     document.getElementById('cliente_id').value = cliente_id;
-  }
-  <>
+  };
+  
 
-document.addEventListener('DOMContentLoaded', () => {
-    const telaCadastro = document.getElementById('telaCadastro');
-    const telaServico = document.getElementById('telaServico');
-    const telaStatus = document.getElementById('telaStatus');
-    const formCadastro = document.getElementById('formCadastro');
-    const formServico = document.getElementById('formServico');
-    const clienteIdInput = document.getElementById('cliente_id');
+document.addEventListener("DOMContentLoaded", () => {
+    const formCadastro = document.getElementById("formCadastro");
+    const telaCadastro = document.getElementById("telaCadastro");
+    const telaServico = document.getElementById("telaServico");
 
-    // Etapa 1: Cadastro do cliente
-    formCadastro.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    formCadastro.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Impede o redirecionamento padrão
 
         const formData = new FormData(formCadastro);
 
         try {
-            const response = await fetch('backend/inserir_cadastro.php', {
-                method: 'POST',
+            const resposta = await fetch("backend/inserir_cadastro.php", {
+                method: "POST",
                 body: formData
             });
 
-            const data = await response.json();
-
-            if (data.status === 'sucesso') {
-                console.log("Cliente cadastrado:", data);
-
-                // Guarda o ID do cliente
-                localStorage.setItem('cliente_id', data.id);
-                clienteIdInput.value = data.id;
-
-                // Vai para a tela de serviços
-                telaCadastro.classList.remove('active');
-                telaServico.classList.add('active');
-            } else {
-                alert('Erro: ' + data.mensagem);
+            // Verifica se o servidor retornou JSON
+            const texto = await resposta.text();
+            let data;
+            try {
+                data = JSON.parse(texto);
+            } catch {
+                console.error("Resposta não é JSON:", texto);
+                alert("Erro inesperado no servidor. Veja o console.");
+                return;
             }
-        } catch (error) {
-            console.error('Erro ao cadastrar cliente:', error);
-            alert('Falha ao cadastrar cliente. Tente novamente.');
+
+            // Se deu tudo certo no cadastro
+            if (data.status === "sucesso") {
+                console.log("✅ Cliente cadastrado:", data);
+
+                // Guarda o ID do cliente no form de serviço
+                document.getElementById("cliente_id").value = data.id;
+
+                // Troca as telas
+                telaCadastro.classList.remove("active");
+                telaCadastro.style.display = "none";
+                telaServico.classList.add("active");
+                telaServico.style.display = "block";
+            } else {
+                alert(data.mensagem || "Erro ao cadastrar cliente.");
+            }
+        } catch (erro) {
+            console.error("❌ Erro na requisição:", erro);
+            alert("Falha na comunicação com o servidor.");
         }
     });
 
-    // Etapa 2: Cadastro do serviço
-    formServico.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(formServico);
-
-        try {
-            const response = await fetch('backend/inserir_servico.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.status === 'sucesso') {
-                console.log("Serviço cadastrado:", data);
-
-                // Vai para a tela de status
-                telaServico.classList.remove('active');
-                telaStatus.classList.add('active');
-            } else {
-                alert('Erro: ' + data.mensagem);
-            }
-        } catch (error) {
-            console.error('Erro ao cadastrar serviço:', error);
-            alert('Falha ao cadastrar serviço.');
-        }
-    });
 
     // Botão "Nova Reserva"
     document.getElementById('btnVoltar').addEventListener('click', () => {
