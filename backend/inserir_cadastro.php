@@ -1,5 +1,5 @@
 <?php
-include("conexao.php");
+require_once 'conexao.php';
 
 $nome = $_POST['nome'] ?? '';
 $cpf = $_POST['cpf'] ?? '';
