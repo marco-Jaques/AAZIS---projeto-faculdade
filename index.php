@@ -256,35 +256,31 @@ cpfInput.addEventListener('input', function() {
 
 let dadosCliente = {};
 
-   document.getElementById('formCadastro').addEventListener('submit', async function(e) {
-    e.preventDefault();
+   document.getElementById('form-cadastro').addEventListener('submit', async function(e) {
+    e.preventDefault(); // 🚫 impede que o formulário envie e recarregue a página
 
     const formData = new FormData(this);
 
     try {
-        const resposta = await fetch('backend/inserir_cadastro.php', {
+        const response = await fetch('backend/inserir_cadastro.php', {
             method: 'POST',
             body: formData
         });
 
-        const texto = await resposta.text();
-        console.log("Resposta bruta do servidor:", texto);
+        const data = await response.json();
 
-        const resultado = JSON.parse(texto);
-        console.log("Retorno do PHP:", resultado);
+        if (data.status === 'sucesso') {
+            console.log('✅ Cliente cadastrado:', data);
 
-        if (resultado.status === 'sucesso') {
-            localStorage.setItem('cliente_id', resultado.id);
-            console.log("Cliente cadastrado com ID:", resultado.id);
-
-            document.getElementById('telaCadastro').classList.remove('active');
-            document.getElementById('telaServico').classList.add('active');
+            // Oculta o formulário atual
+            document.getElementById('tela1').style.display = 'none';
+            // Exibe a próxima parte
+            document.getElementById('tela2').style.display = 'block';
         } else {
-            alert('Erro ao cadastrar cliente: ' + resultado.mensagem);
+            alert(data.mensagem);
         }
     } catch (erro) {
-        console.error("Erro ao processar:", erro);
-        alert("Erro inesperado ao cadastrar cliente.");
+        console.error('Erro no envio:', erro);
     }
 });
 
