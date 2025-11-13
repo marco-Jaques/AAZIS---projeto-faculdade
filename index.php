@@ -400,6 +400,85 @@ document.getElementById('btnVoltar').addEventListener('click', function() {
   if (cliente_id) {
     document.getElementById('cliente_id').value = cliente_id;
   }
+  <>
+
+document.addEventListener('DOMContentLoaded', () => {
+    const telaCadastro = document.getElementById('telaCadastro');
+    const telaServico = document.getElementById('telaServico');
+    const telaStatus = document.getElementById('telaStatus');
+    const formCadastro = document.getElementById('formCadastro');
+    const formServico = document.getElementById('formServico');
+    const clienteIdInput = document.getElementById('cliente_id');
+
+    // Etapa 1: Cadastro do cliente
+    formCadastro.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(formCadastro);
+
+        try {
+            const response = await fetch('backend/inserir_cadastro.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'sucesso') {
+                console.log("Cliente cadastrado:", data);
+
+                // Guarda o ID do cliente
+                localStorage.setItem('cliente_id', data.id);
+                clienteIdInput.value = data.id;
+
+                // Vai para a tela de serviços
+                telaCadastro.classList.remove('active');
+                telaServico.classList.add('active');
+            } else {
+                alert('Erro: ' + data.mensagem);
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar cliente:', error);
+            alert('Falha ao cadastrar cliente. Tente novamente.');
+        }
+    });
+
+    // Etapa 2: Cadastro do serviço
+    formServico.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(formServico);
+
+        try {
+            const response = await fetch('backend/inserir_servico.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'sucesso') {
+                console.log("Serviço cadastrado:", data);
+
+                // Vai para a tela de status
+                telaServico.classList.remove('active');
+                telaStatus.classList.add('active');
+            } else {
+                alert('Erro: ' + data.mensagem);
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar serviço:', error);
+            alert('Falha ao cadastrar serviço.');
+        }
+    });
+
+    // Botão "Nova Reserva"
+    document.getElementById('btnVoltar').addEventListener('click', () => {
+        telaStatus.classList.remove('active');
+        telaCadastro.classList.add('active');
+    });
+});
+
 </script>
 
 </body>
