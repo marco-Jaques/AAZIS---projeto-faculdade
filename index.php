@@ -281,28 +281,27 @@ let dadosCliente = {};
     }
 
     try {
-        const resposta = await fetch('backend/inserir_cadastro.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}&email=${encodeURIComponent(email)}&placa=${encodeURIComponent(placa)}`
-        });
+  const resposta = await fetch('backend/inserir_cadastro.php', {
+    method: 'POST',
+    body: formData
+  });
 
-        const resultado = await resposta.json();
-        console.log(resultado);
+  const texto = await resposta.text(); // lê o texto cru
+  console.log("Resposta bruta do servidor:", texto);
 
-        if (resultado.status === 'sucesso') {
-            // Guarda o ID do cliente para usar no serviço
-            localStorage.setItem('cliente_id', resultado.id);
-            document.getElementById('telaCadastro').classList.remove('active');
-            document.getElementById('telaServico').classList.add('active');
-        } else {
-            alert('Erro ao cadastrar: ' + resultado.mensagem);
-        }
+  const dados = JSON.parse(texto); // tenta converter em JSON
+  console.log("JSON convertido:", dados);
 
-    } catch (erro) {
-        alert('Falha ao conectar ao servidor.');
-        console.error(erro);
-    }
+  if (dados.status === 'sucesso') {
+    alert(dados.mensagem);
+  } else {
+    alert("Erro: " + dados.mensagem);
+  }
+} catch (erro) {
+  console.error("Erro ao processar:", erro);
+  alert("Erro inesperado ao processar resposta do servidor.");
+}
+
 });
 
 document.addEventListener('DOMContentLoaded', () => {
