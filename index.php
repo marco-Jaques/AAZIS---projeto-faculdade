@@ -305,34 +305,46 @@ document.getElementById('formServico').addEventListener('submit', async function
         const resultado = await resposta.json();
 
         if (resultado.status === 'sucesso') {
+            // --- Mostra a tela de status ---
             document.getElementById('telaServico').classList.remove('active');
             document.getElementById('telaStatus').classList.add('active');
+
+            // --- Início da animação de progresso ---
+            let progresso = 0;
+            const barra = document.getElementById('barraProgresso');
+            const texto = document.getElementById('statusTexto');
+
+            // Reseta antes de começar
+            barra.style.width = '0%';
+            barra.textContent = '0%';
+            texto.innerHTML = 'Iniciando o serviço...';
+
+            const interval = setInterval(() => {
+                progresso += 10;
+                barra.style.width = progresso + '%';
+                barra.textContent = progresso + '%';
+
+                if (progresso < 40) {
+                    texto.innerHTML = `Lavagem em andamento...<br><small>Partes: <b>${partes}</b></small>`;
+                } else if (progresso < 80) {
+                    texto.innerHTML = `Polimento e acabamento...<br><small>Partes: <b>${partes}</b></small>`;
+                } else if (progresso < 100) {
+                    texto.innerHTML = `Finalizando o serviço...<br><small>Partes: <b>${partes}</b></small>`;
+                } else {
+                    texto.innerHTML = `✅ Serviço concluído!<br><small>Partes trabalhadas: <b>${partes}</b></small>`;
+                    clearInterval(interval);
+                }
+            }, 500);
+            // --- Fim da animação de progresso ---
         } else {
             alert('Erro ao salvar serviço: ' + resultado.mensagem);
         }
-        // --- Início da animação de progresso --- 
-        let progresso = 0; 
-        const barra = 
-        document.getElementById('barraProgresso'); 
-        const texto = document.getElementById('statusTexto'); 
-        const interval = setInterval(() => {
-             progresso += 10;
-              barra.style.width = progresso + '%';
-               barra.textContent = progresso + '%';
-                if (progresso < 40) texto.innerHTML = Lavagem em andamento...<br><small>Partes: <b>${partes}</b></small>;
-                 else if (progresso < 80) texto.innerHTML = Polimento e acabamento...<br><small>Partes: <b>${partes}</b></small>; 
-                 else if (progresso < 100) texto.innerHTML = Finalizando o serviço...<br><small>Partes: <b>${partes}</b></small>; 
-                 else { texto.innerHTML = Serviço concluído! Pronto para retirada.<br><small>Partes trabalhadas: <b>${partes}</b></small>; 
-                 clearInterval(interval); } 
-                }, 500); 
-                 // --- Fim da animação de progresso --- } 
-                 else { 
-                    alert('Erro ao salvar serviço: ' + resultado.mensagem); } 
-                } catch (erro) { 
-                    alert('Erro de conexão com o servidor.'); 
-                    console.error(erro); 
-                }
+    } catch (erro) {
+        alert('Erro de conexão com o servidor.');
+        console.error(erro);
+    }
 });
+
 
 
 document.getElementById('btnVoltar').addEventListener('click', function() {
