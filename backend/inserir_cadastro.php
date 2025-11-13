@@ -7,12 +7,12 @@ $email = $_POST['email'] ?? '';
 $placa = $_POST['placa'] ?? '';
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO clientes (nome, cpf, email, placa) VALUES (?, ?, ?, ?)");
+    $stmt = $conexao->prepare("INSERT INTO clientes (nome, cpf, email, placa) VALUES (?, ?, ?, ?)");
     $stmt->execute([$nome, $cpf, $email, $placa]);
 
     echo json_encode([
         'status' => 'sucesso',
-        'id' => $pdo->lastInsertId()
+        'id' => $conexao->lastInsertId()
     ]);
 } catch (PDOException $e) {
     echo json_encode([

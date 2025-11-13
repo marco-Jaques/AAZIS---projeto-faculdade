@@ -8,7 +8,7 @@ $funcionario = $_POST['funcionario'] ?? '';
 $partes = $_POST['partes'] ?? '';
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO servicos (cliente_id, modelo, servico, funcionario, partes) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conexao->prepare("INSERT INTO servicos (cliente_id, modelo, servico, funcionario, partes) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$cliente_id, $modelo, $servico, $funcionario, $partes]);
 
     echo json_encode(['status' => 'sucesso']);
