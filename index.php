@@ -310,10 +310,28 @@ document.getElementById('formServico').addEventListener('submit', async function
         } else {
             alert('Erro ao salvar serviço: ' + resultado.mensagem);
         }
-    } catch (erro) {
-        alert('Erro de conexão com o servidor.');
-        console.error(erro);
-    }
+        // --- Início da animação de progresso --- 
+        let progresso = 0; 
+        const barra = 
+        document.getElementById('barraProgresso'); 
+        const texto = document.getElementById('statusTexto'); 
+        const interval = setInterval(() => {
+             progresso += 10;
+              barra.style.width = progresso + '%';
+               barra.textContent = progresso + '%';
+                if (progresso < 40) texto.innerHTML = Lavagem em andamento...<br><small>Partes: <b>${partes}</b></small>;
+                 else if (progresso < 80) texto.innerHTML = Polimento e acabamento...<br><small>Partes: <b>${partes}</b></small>; 
+                 else if (progresso < 100) texto.innerHTML = Finalizando o serviço...<br><small>Partes: <b>${partes}</b></small>; 
+                 else { texto.innerHTML = Serviço concluído! Pronto para retirada.<br><small>Partes trabalhadas: <b>${partes}</b></small>; 
+                 clearInterval(interval); } 
+                }, 500); 
+                 // --- Fim da animação de progresso --- } 
+                 else { 
+                    alert('Erro ao salvar serviço: ' + resultado.mensagem); } 
+                } catch (erro) { 
+                    alert('Erro de conexão com o servidor.'); 
+                    console.error(erro); 
+                }
 });
 
 
