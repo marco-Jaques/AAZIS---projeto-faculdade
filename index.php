@@ -111,25 +111,10 @@ button:hover {
     background: #00c851;
     transform: scale(1.1);
 }
-
-.carro-container img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-.parte-carro {
-  position: absolute;
-  z-index: 2;
-  pointer-events: auto;
-}
-
 input[list] {
-  position: relative;
-  z-index: 3;
+    position: relative;
+    z-index: 3;
 }
-
 </style>
 </head>
 <body>
@@ -161,26 +146,33 @@ input[list] {
         <form id="formServico" name="formServico" action="backend/inserir_servico.php" method="POST">
             <input type="hidden" id="cliente_id" name="cliente_id" value="">
 
-                <div class="carro-container" style="position: relative; width: 100%; height: 300px; margin-top: 20px; border-radius: 8px; border: 1px solid #444; background: #1e1e1e; overflow: hidden;">
-                    <img src="https://cdn.pixabay.com/photo/2016/11/19/14/00/car-1835506_1280.jpg" alt="Carro Sedan Branco">
-  
-  <span class="parte-carro" data-parte="Capô" style="top: 25%; left: 42%;">Capô</span>
-  <span class="parte-carro" data-parte="Porta Dianteira Esq." style="top: 45%; left: 15%;">Porta Dianteira Esq.</span>
-  <span class="parte-carro" data-parte="Porta Dianteira Dir." style="top: 45%; right: 15%;">Porta Dianteira Dir.</span>
-  <span class="parte-carro" data-parte="Roda Esq." style="bottom: 12%; left: 25%;">Roda Esq.</span>
-  <span class="parte-carro" data-parte="Roda Dir." style="bottom: 12%; right: 25%;">Roda Dir.</span>
-  <span class="parte-carro" data-parte="Para-choque" style="top: 68%; left: 46%;">Para-choque</span>
-</div>
+            <div class="carro-container" style="position: relative; width: 100%; height: 300px; margin-top: 20px; border-radius: 8px; border: 1px solid #444; background: #1e1e1e; overflow: hidden;">
+                <img src="https://cdn.pixabay.com/photo/2016/11/19/14/00/car-1835506_1280.jpg" alt="Carro Sedan Branco" style="width: 100%; height: 100%; object-fit: cover;">
 
-<label for="modelo">Modelo do Carro:</label>
-<input list="modelos" id="modelo" name="modelo" placeholder="Ex: Corolla, Onix, Civic..." required>
-<datalist id="modelos">
-  <option value="Corolla">
-  <option value="Civic">
-  <option value="Onix">
-  <option value="HB20">
-  <option value="Golf">
-</datalist>
+                <span class="parte-carro" data-parte="Capô" style="top: 25%; left: 42%;">Capô</span>
+                <span class="parte-carro" data-parte="Porta Dianteira Esq." style="top: 45%; left: 15%;">Porta Dianteira Esq.</span>
+                <span class="parte-carro" data-parte="Porta Dianteira Dir." style="top: 45%; right: 15%;">Porta Dianteira Dir.</span>
+                <span class="parte-carro" data-parte="Roda Esq." style="bottom: 12%; left: 25%;">Roda Esq.</span>
+                <span class="parte-carro" data-parte="Roda Dir." style="bottom: 12%; right: 25%;">Roda Dir.</span>
+                <span class="parte-carro" data-parte="Para-choque" style="top: 68%; left: 46%;">Para-choque</span>
+            </div>
+
+            <input type="hidden" id="partesSelecionadas" name="partesSelecionadas">
+
+            <label for="modelo">Modelo do Carro:</label>
+            <input list="modelos" id="modelo" name="modelo" placeholder="Ex: Corolla, Onix, Civic..." required>
+            <datalist id="modelos">
+                <option value="Corolla">
+                <option value="Civic">
+                <option value="Onix">
+                <option value="HB20">
+                <option value="Golf">
+                <option value="Compass">
+                <option value="Creta">
+                <option value="Argo">
+                <option value="Polo">
+                <option value="Tracker">
+            </datalist>
 
             <label for="servico">Descreva o serviço desejado:</label>
             <textarea id="servico" name="servico" rows="4" placeholder="Ex.: Lavagem completa, polimento, detalhamento de interior..." required></textarea>
