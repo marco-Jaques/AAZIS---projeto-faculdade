@@ -24,11 +24,11 @@ try {
 
     $id = $pdo->lastInsertId();
 
-    echo json_encode([
+    /*echo json_encode([
         'status' => 'sucesso',
         'mensagem' => 'Cliente cadastrado com sucesso!',
         'id' => $id
-    ]);
+    ]);*/
 } catch (PDOException $e) {
     echo json_encode([
         'status' => 'erro',
